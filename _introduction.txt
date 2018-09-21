@@ -1,0 +1,1 @@
+picking up another approach to learning Ruby, Rails, JS and maybe react if I can find a React Version
