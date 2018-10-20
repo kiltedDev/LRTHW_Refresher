@@ -1,3 +1,5 @@
+require 'pry'
+
 module Map
 
   class Room
@@ -14,7 +16,19 @@ module Map
     attr_reader :description
 
     def go(direction)
-      return @paths[direction]
+      if !@paths[direction] && @paths.include?("*")
+        new_room = @paths["*"]
+      else
+        new_room = @paths[direction]
+      end
+
+      if new_room
+        return new_room
+      elsif !@paths[direction] && @paths.include?("*")
+        return ROOM_NAMES[@paths["*"]]
+      else
+        return ROOM_NAMES[@paths[direction]]
+      end
     end
 
     def add_paths(paths)
@@ -59,7 +73,6 @@ module Map
     """
   )
 
-
   THE_BRIDGE = Room.new(
     "The Bridge",
     """
@@ -75,7 +88,6 @@ module Map
     arm and don't want to set it off.
     """
   )
-
 
   ESCAPE_POD = Room.new(
     "Escape Pod",
@@ -98,7 +110,6 @@ module Map
     do you take?
     """
   )
-
 
   THE_END_WINNER = Room.new("The End",
     """
@@ -127,21 +138,25 @@ module Map
   })
 
   GENERIC_DEATH = Room.new("death", "You died.")
+  ARMORY_DEATH = Room.new("death", "Wrong code.  The bomb explodes.  Hugely.  You died")
+  BRIDGE_DEATH = Room.new("death", "You Threw the bomb poorly.  You died")
+  CORRIDOR_SHOOT_DEATH = Room.new("death", "You miss.  They perforate you.  Then they perforate your corpse.  You died.")
+  CORRIDOR_DODGE_DEATH = Room.new("death", "Who do you think you are?  Han?  You died.")
 
   THE_BRIDGE.add_paths({
-    'throw the bomb' => GENERIC_DEATH,
-    'slowly place the bomb' => ESCAPE_POD
+    'throw the bomb' => "BRIDGE_DEATH",
+    'slowly place the bomb' => "ESCAPE_POD"
   })
 
   LASER_WEAPON_ARMORY.add_paths({
-    '0132' => THE_BRIDGE,
-    '*' => GENERIC_DEATH
+    '0132' => "THE_BRIDGE",
+    '*' => "ARMORY_DEATH"
   })
 
   CENTRAL_CORRIDOR.add_paths({
-    'shoot!' => GENERIC_DEATH,
-    'dodge!' => GENERIC_DEATH,
-    'tell a joke' => LASER_WEAPON_ARMORY
+    'shoot!' => "CORRIDOR_SHOOT_DEATH",
+    'dodge!' => "CORRIDOR_DODGE_DEATH",
+    'tell a joke' => "LASER_WEAPON_ARMORY"
   })
 
   START = CENTRAL_CORRIDOR

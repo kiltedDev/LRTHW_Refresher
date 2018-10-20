@@ -6,8 +6,7 @@ class TestMap < Test::Unit::TestCase
   def test_room()
     gold = Map::Room.new(
       "GoldMap::Room",
-      """This room has gold in it you can grab. There's a
-      door to the north.""")
+      """This room has gold in it you can grab. There's a door to the north.""")
     assert_equal( "GoldMap::Room", gold.name)
     assert_equal({}, gold.paths)
   end
@@ -37,13 +36,22 @@ class TestMap < Test::Unit::TestCase
   end
 
   def test_gothon_game_map()
-    assert_equal(Map::GENERIC_DEATH, Map::START.go('shoot!'))
-    assert_equal(Map::GENERIC_DEATH, Map::START.go('dodge!'))
+    assert_equal(Map::CORRIDOR_SHOOT_DEATH, Map::START.go('shoot!'))
+    assert_equal(Map::CORRIDOR_DODGE_DEATH, Map::START.go('dodge!'))
 
     room = Map::START.go('tell a joke')
     assert_equal(Map::LASER_WEAPON_ARMORY, room)
 
-    # complete this test by making it play the game
+    assert_equal(Map::ARMORY_DEATH, room.go('1123'))
+    room = room.go("0132")
+    assert_equal(Map::THE_BRIDGE, room)
+
+    assert_equal(Map::BRIDGE_DEATH, room.go('throw the bomb'))
+    room = room.go("slowly place the bomb")
+    assert_equal(Map::ESCAPE_POD, room)
+
+    assert_equal(Map::THE_END_LOSER, room.go('4'))
+    assert_equal(Map::THE_END_WINNER, room.go("2"))
   end
 
   def test_session_loading()
@@ -57,6 +65,7 @@ class TestMap < Test::Unit::TestCase
     assert_equal(room, Map::START)
 
     room = room.go('tell a joke')
+    # binding.pry
     assert_equal(room, Map::LASER_WEAPON_ARMORY)
 
     Map::save_room(session, room)
