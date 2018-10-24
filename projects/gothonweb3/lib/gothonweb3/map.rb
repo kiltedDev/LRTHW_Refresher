@@ -19,16 +19,20 @@ module Map
       if !@paths[direction] && @paths.include?("*")
         new_room = @paths["*"]
       else
-        new_room = @paths[direction]
+        if ROOM_NAMES[direction]
+          new_room = ROOM_NAMES[direction]
+        else
+          new_room = @paths[direction]
+        end
       end
 
-      if new_room
-        return new_room
-      elsif !@paths[direction] && @paths.include?("*")
-        return ROOM_NAMES[@paths["*"]]
-      else
-        return ROOM_NAMES[@paths[direction]]
-      end
+      # if new_room
+      #   return new_room
+      # elsif !@paths[direction] && @paths.include?("*")
+      #   return ROOM_NAMES[@paths["*"]]
+      # else
+      #   return ROOM_NAMES[@paths[direction]]
+      # end
     end
 
     def add_paths(paths)
@@ -177,12 +181,15 @@ module Map
   }
 
   def Map::load_room(session)
-    # Given a session this will return the right room or nil
-    return ROOM_NAMES[session[:room]]
+    if session[:room] = "START"
+      return ROOM_NAMES["CENTRAL_CORRIDOR"]
+    else
+      return ROOM_NAMES[session[:room]]
+    end
   end
 
   def Map::save_room(session, room)
     # Store the room in the session for later, using its name
-    session[:room] = ROOM_NAMES.key(room)
+    session[:room] = room
   end
 end

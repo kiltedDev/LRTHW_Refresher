@@ -65,10 +65,10 @@ class TestMap < Test::Unit::TestCase
     assert_equal(room, Map::START)
 
     room = room.go('tell a joke')
-    # binding.pry
     assert_equal(room, Map::LASER_WEAPON_ARMORY)
 
     Map::save_room(session, room)
-    assert_equal(room, Map::LASER_WEAPON_ARMORY)
+    check = Map::LASER_WEAPON_ARMORY
+    assert_equal(room, check.name)
   end
 end
